@@ -15,7 +15,7 @@ interface BatchInterface
      * @param bool $raw
      * @return mixed
      */
-    public function update(Model $table, array $values, string $index = null, bool $raw = false);
+    public function update(Model $table, array $values, string $index = null, bool $raw = false, bool $softDelete = false);
 
     /**
      * Update multiple rows with two index.

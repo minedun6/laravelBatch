@@ -52,7 +52,7 @@ class Batch implements BatchInterface
      * @return bool|int
      * @updatedBy Ibrahim Sakr <ebrahimes@gmail.com>
      */
-    public function update(Model $table, array $values, string $index = null, bool $raw = false)
+    public function update(Model $table, array $values, string $index = null, bool $raw = false,bool $softDelete = false)
     {
         $final = [];
         $ids = [];
@@ -133,9 +133,15 @@ class Batch implements BatchInterface
                     . 'ELSE `' . $k . '` END), ';
             }
 
-            $query = "UPDATE `" . $this->getFullTableName($table) . "` SET " . substr($cases, 0, -2) . " WHERE `$index` IN(" . '"' . implode('","', $ids) . '"' . ");";
+            $query = "UPDATE `" . $this->getFullTableName($table) . "` SET " . substr($cases, 0, -2) . " WHERE `$index` IN(" . '"' . implode('","', $ids) . '"' . ")";
 
         }
+
+        if($softDelete){
+            $query .= " AND deleted_at IS NULL";
+        }
+
+        $query .= ";";
 
 
         return $this->db->connection($this->getConnectionName($table))->update($query);
@@ -170,7 +176,7 @@ class Batch implements BatchInterface
      * $index2 = 'user_id';
      *
      */
-    public function updateWithTwoIndex(Model $table, array $values, string $index = null, string $index2 = null, bool $raw = false)
+    public function updateWithTwoIndex(Model $table, array $values, string $index = null, string $index2 = null, bool $raw = false,bool $softDelete = false)
     {
         $final = [];
         $ids = [];
@@ -218,8 +224,14 @@ class Batch implements BatchInterface
                 $cases .= '`' . $k . '` = (CASE ' . implode("\n", $v) . "\n"
                     . 'ELSE `' . $k . '` END), ';
             }
-            $query = "UPDATE `" . $this->getFullTableName($table) . "` SET " . substr($cases, 0, -2) . " WHERE `$index` IN(" . '"' . implode('","', $ids) . '")' . " AND `$index2` IN(" . '"' . implode('","', $ids2) . '"' . " );";
+            $query = "UPDATE `" . $this->getFullTableName($table) . "` SET " . substr($cases, 0, -2) . " WHERE `$index` IN(" . '"' . implode('","', $ids) . '")' . " AND `$index2` IN(" . '"' . implode('","', $ids2) . '"' . " )";
         }
+
+        if($softDelete){
+            $query .= " AND deleted_at IS NULL";
+        }
+
+        $query .= ";";
 
         return $this->db->connection($this->getConnectionName($table))->update($query);
     }
