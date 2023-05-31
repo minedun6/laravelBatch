@@ -38,9 +38,9 @@ trait HasBatch
      * @param  bool  $raw
      * @return bool|int
      */
-    public static function batchUpdate(array $values, string $index = null, bool $raw = false)
+    public static function batchUpdate(array $values, string $index = null, bool $raw = false,bool $softDelete = false)
     {
-        return app(Batch::class)->update(new static, $values, $index, $raw);
+        return app(Batch::class)->update(new static, $values, $index, $raw,$softDelete);
     }
 
     /**
